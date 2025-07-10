@@ -1,34 +1,52 @@
 #!/bin/bash
 
-echo "Welcome, traveler, to the Labyrinth of Commands!"
+# === COLORS ===
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+BLUE=$(tput setaf 4)
+RESET=$(tput sgr0)
+
+# === GAME INITIALIZATION ===
+# Create or clear a log file at the start of the game
+> quest.log
+
+echo "${BLUE}Welcome, traveler, to the Labyrinth of Commands!${RESET}"
 echo "What is your name?"
 
 read PLAYER_NAME
+echo "A fine name,${GREEN}$PLAYER_NAME!${RESET} Your journey begins now."
+echo "Type ${YELLOW}QUIT${RESET} to exit the game at any time."
 
-echo "A fine name, ${PLAYER_NAME}! Your journey begins now."
+# === MAIN GAME CYCLE ===
+while true; do
+    echo ""
+    echo "You stand at a crossroads. A dark path leads to the ${RED}LEFT${RESET}, a bright one to the ${GREEN}RIGHT${RESET}."
+    echo "What will you do? (Type LEFT, RIGHT, LOOK, or QUIT)"
 
-echo "You stand at a crossroads. A dark path leads to the LEFT, a bright one to the RIGHT."
-echo "Which path will you choose? (Type LEFT or RIGHT)"
+    read DIRECTION
 
-read DIRECTION
+    echo "Player command: $DIRECTION" >> quest.log
 
-echo "Player chose path: $DIRECTION" >> quest.log
-
-
-if [ "$DIRECTION" == "LEFT" ]; then
-    echo "You chose the path of shadows. It is cold damp here."
-    echo "EVENT: ENTERED_SHADOW_PATH" >> quest.log
-elif [ "$DIRECTION" == "RIGHT" ]; then
-    echo "You chose the path of light. Birds are singing, and the air is warm."
-    echo "EVENT: ENTERED_LIGHT_PATH" >> quest.log
-elif [ "$DIRECTION" == "LOOK" ]; then
-    if [ $(grep -c "ENTERED_SHADOW_PATH" quest.log) -gt 0 ] && [ $(grep -c "EVENT: FOUND_RUSTY_KEY" quest.log) -eq 0 ]; then
-        echo "You look closely at the shadows... and find a rusty key!"
-        echo "EVENT: FOUND_RUSTY_KEY" >> quest.log
+    if [ "$DIRECTION" == "LEFT" ]; then
+        echo "${RED}You chose the path of shadows. It is cold and damp here.${RESET}"
+        echo "EVENT: ENTERED_SHADOW_PATH" >> quest.log
+    elif [ "$DIRECTION" == "RIGHT" ]; then
+        echo "${GREEN}You chose the path of light. Birds are singing, and the air is warm.${RESET}"
+        echo "EVENT: ENTERED_LIGHT_PATH" >> quest.log
+    elif [ "$DIRECTION" == "LOOK" ]; then
+        if [ $(grep -c "ENTERED_SHADOW_PATH" quest.log) -gt 0 ] && [ $(grep -c "EVENT: FOUND_RUSTY_KEY" quest.log) -eq 0 ]; then
+            echo "${YELLOW}You look closely at the shadows... and find a rusty key!${RESET}"
+            echo "EVENT: FOUND_RUSTY_KEY" >> quest.log
+        else
+            echo "You look around, but see nothing of interest."
+        fi
+    elif [ "$DIRECTION" == "QUIT" ]; then
+        echo "Farewell, $PLAYER_NAME. Your quest is over... for now."
+        break
     else
-        echo "You look around, but see nothing of interest."
+        echo "${RED}I don't understand that command, $PLAYER_NAME.${RESET}"
     fi
-else 
-    echo "Indecisiveness is a dangerous trait, $PLAYER_NAME. A goblin jumps out of the bushes and eats you."
-    echo "GAME OVER"
-fi
+done
+
+echo "${BLUE}GAME OVER${RESET}"
