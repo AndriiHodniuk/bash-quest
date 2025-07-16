@@ -22,7 +22,7 @@ echo "Type ${YELLOW}QUIT${RESET} to exit the game at any time."
 while true; do
     echo ""
     echo "You stand at a crossroads. A dark path leads to the ${RED}LEFT${RESET}, a bright one to the ${GREEN}RIGHT${RESET}."
-    echo "What will you do? (Type LEFT, RIGHT, LOOK, or QUIT)"
+    echo "What will you do? (Type LEFT, RIGHT, LOOK, HINT or QUIT)"
 
     read DIRECTION
 
@@ -38,8 +38,13 @@ while true; do
         if [ $(grep -c "ENTERED_SHADOW_PATH" quest.log) -gt 0 ] && [ $(grep -c "EVENT: FOUND_RUSTY_KEY" quest.log) -eq 0 ]; then
             echo "${YELLOW}You look closely at the shadows... and find a rusty key!${RESET}"
             echo "EVENT: FOUND_RUSTY_KEY" >> quest.log
+        fi
+    elif [ "$DIRECTION" == "HINT" ]; then
+        # The hint is only available if the player has been on the shadow path
+        if [ $(grep -c "ENTERED_SHADOW_PATH" quest.log) -gt 0 ]; then
+             echo "${YELLOW}You feel a strange insight... Sometimes, looking closely is the key.${RESET}"
         else
-            echo "You look around, but see nothing of interest."
+             echo "You try to concentrate, but no hints come to mind."
         fi
     elif [ "$DIRECTION" == "QUIT" ]; then
         echo "Farewell, $PLAYER_NAME. Your quest is over... for now."
