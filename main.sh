@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -eu
 
@@ -51,26 +51,59 @@ while true; do
     read DIRECTION
     echo "Player command: $DIRECTION" >> quest.log
 
-    case "$DIRECTION" in
-        LEFT)
-            echo "${RED}You chose the path of shadows. It is cold and damp here.${RESET}"
-            ;;
-        RIGHT)
-            echo "${GREEN}You chose the path of light. Birds are singing, and the air is warm.${RESET}"
-            ;;
-        LOOK)
-            if [ ${player[has_key]} -eq 0 ]; then
-                echo "${YELLOW}You look around and find a rusty key under a rock!${RESET}"
-                player[has_key]=1
+    # ... попередній код ...
+
+case "$DIRECTION" in
+    LEFT)
+        if [ ${goblin[is_alive]} -eq 1 ]; then
+            echo "${RED}You try to go left, but the goblin attacks you!${RESET}"
+            player[health]=$(( ${player[health]} - ${goblin[strength]} ))
+            echo "The goblin hits you for ${goblin[strength]} damage. You have ${player[health]} HP left."
+        else
+             echo "${RED}You chose the path of shadows. It is cold and damp here.${RESET}"
+        fi
+        ;;
+    RIGHT)
+        echo "${GREEN}You chose the path of light. Birds are singing, and the air is warm.${RESET}"
+        ;;
+    LOOK)
+        if [ ${player[has_key]} -eq 0 ]; then
+            echo "${YELLOW}You look around and find a rusty key under a rock!${RESET}"
+            player[has_key]=1
+        else
+            echo "You already have the key."
+        fi
+        ;;
+    ATTACK)
+        if [ ${goblin[is_alive]} -eq 1 ]; then
+            # Гравець атакує
+            goblin[health]=$(( ${goblin[health]} - ${player[strength]} ))
+            echo "You attack the goblin, dealing ${player[strength]} damage. It has ${goblin[health]} HP left."
+
+            # Перевірка, чи переможений гоблін
+            if [ ${goblin[health]} -le 0 ]; then
+                echo "${GREEN}You have defeated the goblin! The path is clear.${RESET}"
+                goblin[is_alive]=0
             else
-                echo "You already have the key."
+                # Гоблін атакує у відповідь
+                player[health]=$(( ${player[health]} - ${goblin[strength]} ))
+                echo "The goblin retaliates, hitting you for ${goblin[strength]} damage. You have ${player[health]} HP left."
             fi
-            ;;
-        QUIT)
-            exit 0
-            ;;
-        *)
-            echo "${RED}I don't understand that command, $PLAYER_NAME.${RESET}"
-            ;;
-    esac
+        else
+            echo "There is nothing to attack."
+        fi
+        ;;
+    QUIT)
+        exit 0
+        ;;
+    *)
+        echo "${RED}I don't understand that command, $PLAYER_NAME.${RESET}"
+        ;;
+esac
 done
+
+# Перевірка на поразку гравця
+if [ ${player[health]} -le 0 ]; then
+    echo "${RED}You have been defeated. GAME OVER.${RESET}"
+    exit 1
+fi
