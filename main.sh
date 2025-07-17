@@ -57,8 +57,7 @@ case "$DIRECTION" in
     LEFT)
         if [ ${goblin[is_alive]} -eq 1 ]; then
             echo "${RED}You try to go left, but the goblin attacks you!${RESET}"
-            player[health]=$(( ${player[health]} - ${goblin[strength]} ))
-            echo "The goblin hits you for ${goblin[strength]} damage. You have ${player[health]} HP left."
+            echo "The goblin blocks your way!"
         else
              echo "${RED}You chose the path of shadows. It is cold and damp here.${RESET}"
         fi
@@ -86,7 +85,7 @@ case "$DIRECTION" in
                 goblin[is_alive]=0
             else
                 # Гоблін атакує у відповідь
-                player[health]=$(( ${player[health]} - ${goblin[strength]} ))
+                echo "The goblin blocks your way!"
                 echo "The goblin retaliates, hitting you for ${goblin[strength]} damage. You have ${player[health]} HP left."
             fi
         else
