@@ -9,6 +9,21 @@ YELLOW=$(tput setaf 3)
 BLUE=$(tput setaf 4)
 RESET=$(tput sgr0)
 
+function print_color() {
+    local color=$1
+    local text=$2
+    echo "${color}${text}${RESET}"
+}
+
+# Screen-saver display function
+function show_title_screen() {
+    clear
+    while IFS= read -r line; do
+        print_color "$BLUE" "$line"
+    done < "assets/title.txt"
+    echo
+}
+
 # === EXIT CLEANING FUNCTION ===
 function on_exit {
     if [ -n "${PLAYER_NAME-}" ]; then # Checking if the PLAYER_NAME variable has been installed
@@ -32,6 +47,7 @@ goblin[strength]=3
 goblin[is_alive]=1
 
 # === GAME INITIALIZATION ===
+show_title_screen
 # Create or clear a log file at the start of the game
 > quest.log
 
